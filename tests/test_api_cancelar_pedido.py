@@ -14,7 +14,7 @@ def test_deve_cancelar_pedido_com_sucesso(client):
     r = client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
     cod_pedido = r.json()["codigo"]
 
-    response = client.patch(f"/lanchonete/pedidos/{cod_pedido}/cancelar")
+    response = client.post(f"/lanchonete/pedidos/{cod_pedido}/cancelar")
 
     assert response.status_code == 200
 
@@ -34,7 +34,7 @@ def test_nao_deve_cancelar_pedido_inexistente(client):
         - Status HTTP 400
         - Mensagem de erro indicando que o pedido não foi encontrado
     """
-    response = client.patch("/lanchonete/pedidos/999/cancelar")
+    response = client.post("/lanchonete/pedidos/999/cancelar")
 
     assert response.status_code == 400
 
@@ -63,7 +63,7 @@ def test_nao_deve_cancelar_pedido_finalizado(client):
     cod_pedido = r.json()["codigo"]
     client.post(f"/lanchonete/pedidos/{cod_pedido}/finalizar")
 
-    response = client.patch(f"/lanchonete/pedidos/{cod_pedido}/cancelar")
+    response = client.post(f"/lanchonete/pedidos/{cod_pedido}/cancelar")
 
     assert response.status_code == 400
     data = response.json()
@@ -86,7 +86,7 @@ def test_deve_listar_pedidos_cancelados(client):
     client.post("/produtos", json={"codigo": 1, "valor": 10.0, "tipo": 2})
     r = client.post("/lanchonete/pedidos", json={"cpf": "12345678900", "cod_produto": 1, "qtd_max_produtos": 5})
     cod_pedido = r.json()["codigo"]
-    client.patch(f"/lanchonete/pedidos/{cod_pedido}/cancelar")
+    client.post(f"/lanchonete/pedidos/{cod_pedido}/cancelar")
 
     response = client.get("/lanchonete/pedidos/cancelados")
 

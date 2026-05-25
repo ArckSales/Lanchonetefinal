@@ -37,3 +37,12 @@ class ObservacaoOut(BaseModel):
 
     codigo: int
     observacao: str
+
+
+class PedidoFilaOut(BaseModel):
+    """Dados de retorno de um pedido na fila de preparo."""
+
+    codigo: int
+    cpf: str
+    prioritario: bool
+    observacao: str

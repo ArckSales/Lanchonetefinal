@@ -183,5 +183,41 @@ class LanchoneteService:
         """
         return db.pedidos_por_codigo.get(cod_pedido)
 
+    def tornar_pedido_prioritario(self, cod_pedido: int) -> bool:
+        """Marca um pedido como prioritário.
+
+        Apenas pedidos ativos (não entregues e não cancelados) podem virar prioritários.
+
+        Args:
+            cod_pedido: Código do pedido.
+
+        Returns:
+            True se marcado como prioritário, False caso contrário.
+        """
+        pedido = db.pedidos_por_codigo.get(cod_pedido)
+        if pedido is None:
+            return False
+        return pedido.tornar_prioritario()
+
+    def listar_fila_preparo(self) -> list[Pedido]:
+        """Lista a fila de preparo da cozinha.
+
+        A fila mostra:
+        - Pedidos prioritários primeiro
+        - Depois pedidos normais
+        - Sem contar pedidos cancelados ou entregues
+
+        Returns:
+            Lista de pedidos ordenada pela prioridade.
+        """
+        # Filtra apenas pedidos ativos (não cancelados e não entregues)
+        pedidos_ativos = [
+            p for p in db.pedidos_por_codigo.values()
+            if not p.esta_cancelado and not p.esta_entregue
+        ]
+
+        # Ordena com prioritários primeiro, depois normais
+        return sorted(pedidos_ativos, key=lambda p: (not p.prioritario, p.codigo))
+
 
 service = LanchoneteService()

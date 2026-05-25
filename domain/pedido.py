@@ -34,6 +34,7 @@ class Pedido:
         self.listaProdutos: List[Produto] = []
         self.esta_entregue: bool = False
         self.esta_cancelado: bool = False
+        self.prioritario: bool = False
         self.observacao: str = ""
 
         if self.qtd_max_produtos <= 0:
@@ -105,6 +106,22 @@ class Pedido:
             return False
 
         self.esta_cancelado = True
+        return True
+
+    def tornar_prioritario(self) -> bool:
+        """Marca um pedido como prioritário.
+
+        Returns:
+            True se marcado como prioritário, False se pedido não pode ser prioritário
+            (já entregue ou cancelado).
+        """
+        if self.esta_entregue:
+            return False
+
+        if self.esta_cancelado:
+            return False
+
+        self.prioritario = True
         return True
 
     def total_se_finalizado(self) -> float:
